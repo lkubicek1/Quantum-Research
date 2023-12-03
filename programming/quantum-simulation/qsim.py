@@ -21,10 +21,19 @@ class Gate:
             control, target = target_qubits
             full_gate = 1
             for qubit in range(num_qubits):
-                if qubit == control or qubit == target:
-                    full_gate = np.kron(full_gate, self.matrix if qubit == target else np.eye(2))
-                else:
+                if qubit == control:
+                    # Apply identity matrix for the control qubit
                     full_gate = np.kron(full_gate, np.eye(2))
+                elif qubit == target:
+                    # Apply CNOT matrix at the target qubit position
+                    full_gate = np.kron(full_gate, self.matrix)
+                else:
+                    # Apply identity matrix for other qubits
+                    full_gate = np.kron(full_gate, np.eye(2))
+
+            # Resize the full_gate to fit the actual size of the quantum system
+            full_gate = full_gate[:2 ** num_qubits, :2 ** num_qubits]
+
             return np.dot(full_gate, state)
 
         # If it's a three-qubit gate like Toffoli
