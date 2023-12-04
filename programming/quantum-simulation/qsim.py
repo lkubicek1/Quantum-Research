@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 
 class Gate:
@@ -127,9 +128,18 @@ class QuantumCircuit:
     __cx__ = CNOTGate()
     __toffoli__ = ToffoliGate()
 
-    def __init__(self, num_qubits):
+
+    def __init__(self, num_qubits, noise_level = 0.0):
         self.num_qubits = num_qubits
         self.state = np.array([1] + [0] * (2 ** num_qubits - 1), dtype=complex).reshape(-1, 1)
+        self.noise_level = noise_level 
+        self.__in_noise__()
+
+    def __in_noise__(self):
+        for qubit in range(0, self.num_qubits):
+            chance =random.randint(1, 100)
+            if chance < self.noise_level*100:
+                self.x([qubit])
 
     def __apply_gate__(self, gate, target_qubits):
         self.state = gate.apply(self.state, target_qubits, self.num_qubits)
